@@ -12,7 +12,7 @@
 @interface MFFeedDetailViewController : UIViewController
 
 @property (strong, nonatomic) FeedItem* feedItem;
--(id)initWith:(NSString *)message;
--(void)calc: (int)ho: (int)AI;
+
+-(id)initWith:(FeedItem *)feedContents;
 
 @end

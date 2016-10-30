@@ -23,14 +23,13 @@
     
     self.cellData = [[NSMutableArray alloc]init];
     
-    if ([FBSDKAccessToken currentAccessToken])
-    {
+    if ([FBSDKAccessToken currentAccessToken]){
+        
         [[[FBSDKGraphRequest alloc] initWithGraphPath:@"me/feed?fields=picture,created_time,message,id" parameters:nil]
+         
          startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error){
-             if (!error)
-             {
-                 for (NSDictionary *graphAPIData in [result objectForKey:@"data"])
-                 {
+             if (!error){
+                 for (NSDictionary *graphAPIData in [result objectForKey:@"data"]){
                      
                      FeedItem *feed = [[FeedItem alloc]init];
                      
@@ -39,22 +38,18 @@
                      NSString *message = [graphAPIData objectForKey:@"message"];
                      
                      [feed setWritedTime:createdTime];
-                     
-                     //[feed setImage:];
+                     [feed setTitle:message];
                      
                      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                          
                          feed.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:picture]]];
                          
                          dispatch_async(dispatch_get_main_queue(), ^ {
-                             NSLog(@"Succed");
                              feed.targetImageView.image = feed.image;
                              [feed.targetImageView setNeedsDisplay];
                          });
                      });
-                     
-                     [feed setTitle:message];
-                     
+
                      [self.cellData addObject:feed];
                  }
                  
@@ -89,20 +84,22 @@
 
     if(cell == nil)
     {
-        cell = [[CustomCell alloc] initWithFrame:CGRectZero reuseIdentifier:cellIdentifier];
+        cell = [[[CustomCell alloc] init]
+                                        initWithStyle:UITableViewCellStyleDefault
+                                       reuseIdentifier:cellIdentifier];
     }
     
     FeedItem *feedItemCell = (FeedItem *)[self.cellData objectAtIndex:indexPath.row];
-    cell.primaryLabel.text = [feedItemCell title];
-    cell.secondaryLabel.text = [feedItemCell writedTime];
+    cell.titleLabel.text = [feedItemCell title];
+    cell.writedTimeLabel.text = [feedItemCell writedTime];
     
     if(feedItemCell.image != nil)
     {
-        cell.myImageView.image = [feedItemCell image];
+        cell.feedImageView.image = [feedItemCell image];
     }
     else
     {
-        feedItemCell.targetImageView = cell.myImageView;
+        feedItemCell.targetImageView = cell.feedImageView;
     }
     return cell;
 }
@@ -115,7 +112,8 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 60;
+    const int TABLE_CELL_HEIGHT = 60;
+    return TABLE_CELL_HEIGHT;
 }
 
 @end

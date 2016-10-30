@@ -9,11 +9,11 @@
 #import <UIKit/UIKit.h>
 
 @interface CustomCell : UITableViewCell {
-    UILabel *primaryLabel;
-    UILabel *secondaryLabel;
-    UIImageView *myImageView;
+    UILabel *titleLabel;
+    UILabel *writedTimeLabel;
+    UIImageView *feedImageView;
 }
-@property(nonatomic,retain)UILabel *primaryLabel;
-@property(nonatomic,retain)UILabel *secondaryLabel;
-@property(nonatomic,retain)UIImageView *myImageView;
+@property(nonatomic,retain)UILabel *titleLabel;
+@property(nonatomic,retain)UILabel *writedTimeLabel;
+@property(nonatomic,retain)UIImageView *feedImageView;
 @end

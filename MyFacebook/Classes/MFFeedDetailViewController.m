@@ -10,7 +10,6 @@
 
 @implementation MFFeedDetailViewController
 
-
 -(id)initWith:(FeedItem *)feedContents
 {
     self = [super init];
@@ -21,8 +20,6 @@
     return self;
 }
 
-
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -30,22 +27,21 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    UILabel *primaryLabel;
-    UILabel *secondaryLabel;
-    UIImageView *myImageView;
+    UILabel *titileLabel;
+    UILabel *writedTimeLabel;
+    UIImageView *smallImageView;
     UIImageView *detailImageView;
-    UIImage *detailImage;
     UILabel *detailTextLabel;
     
-    primaryLabel = [[UILabel alloc]init];
-    primaryLabel.textAlignment = UITextAlignmentLeft;
-    primaryLabel.font = [UIFont systemFontOfSize:14];
+    titileLabel = [[UILabel alloc]init];
+    titileLabel.textAlignment = NSTextAlignmentLeft;
+    titileLabel.font = [UIFont systemFontOfSize:14];
     
-    secondaryLabel = [[UILabel alloc]init];
-    secondaryLabel.textAlignment = UITextAlignmentLeft;
-    secondaryLabel.font = [UIFont systemFontOfSize:8];
+    writedTimeLabel = [[UILabel alloc]init];
+    writedTimeLabel.textAlignment = NSTextAlignmentLeft;
+    writedTimeLabel.font = [UIFont systemFontOfSize:8];
     
-    myImageView = [[UIImageView alloc]init];
+    smallImageView = [[UIImageView alloc]init];
     
     detailImageView = [[UIImageView alloc]init];
     
@@ -54,49 +50,38 @@
     detailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
     detailTextLabel.numberOfLines = 0;
     
-    
-    detailImage = [self.feedItem image];
-    detailImageView.image = detailImage;
+    detailImageView.image = [self.feedItem image];
     
     CGRect frame;
     frame= CGRectMake(10 ,85, 50, 50);
-    myImageView.frame = frame;
+    smallImageView.frame = frame;
     
     frame= CGRectMake(70 ,90, 200, 25);
-    primaryLabel.frame = frame;
+    titileLabel.frame = frame;
     
     frame= CGRectMake(70 ,115, 100, 15);
-    secondaryLabel.frame = frame;
+    writedTimeLabel.frame = frame;
     
-    frame= CGRectMake(10 ,150, detailImage.size.height, detailImage.size.width);
+    float feedImageHeight = [self.feedItem image].size.height;
+    float feedImageWidth = [self.feedItem image].size.width;
+    
+    frame= CGRectMake(10 ,150, feedImageHeight, feedImageWidth);
     detailImageView.frame = frame;
     
-    frame= CGRectMake(10 ,180+detailImage.size.width, 370, 400);
+    frame= CGRectMake(10 ,180 + feedImageWidth, 370, 400);
     detailTextLabel.frame = frame;
     
-    [self.view addSubview:myImageView];
-    [self.view addSubview:primaryLabel];
-    [self.view addSubview:secondaryLabel];
+    [self.view addSubview:smallImageView];
+    [self.view addSubview:titileLabel];
+    [self.view addSubview:writedTimeLabel];
     [self.view addSubview:detailTextLabel];
     [self.view addSubview:detailImageView];
     
-    
-    
-    primaryLabel.text = [self.feedItem title];
-    secondaryLabel.text = [self.feedItem writedTime];
-    myImageView.image = [self.feedItem image];
+    titileLabel.text = [self.feedItem title];
+    writedTimeLabel.text = [self.feedItem writedTime];
+    smallImageView.image = [self.feedItem image];
     detailTextLabel.text = [self.feedItem title];
     [detailTextLabel sizeToFit];
 }
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-
-
-
-
 
 @end

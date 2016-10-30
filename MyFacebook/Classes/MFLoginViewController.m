@@ -19,16 +19,13 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    if ([FBSDKAccessToken currentAccessToken])
-    {
-        [self onLogin];
-    }
-    else
-    {
+    if ([FBSDKAccessToken currentAccessToken] == nil) {
         FBSDKLoginButton *loginButton = [[FBSDKLoginButton alloc] init];
         loginButton.delegate = self;
         loginButton.center = self.view.center;
         [self.view addSubview:loginButton];
+    } else {
+        [self loginMyFacebook];
     }
 }
 
@@ -37,27 +34,31 @@
 
 - (void)loginButton:(FBSDKLoginButton *)loginButton didCompleteWithResult:(FBSDKLoginManagerLoginResult *)result error:(NSError *)error
 {
-    if(result.isCancelled != YES)
-    {
-        [self onLogin];
-    }
-    else
-    {
-        NSString *message = @"Login was Cancled.";
+    if(result.isCancelled != YES &&
+       [FBSDKAccessToken currentAccessToken] != nil){
+        [self loginMyFacebook];
+    } else {
         UIAlertView *toast = [[UIAlertView alloc] initWithTitle:nil
-                                                        message:message
+                                                        message:@"Login was Cancled."
                                                        delegate:nil
                                               cancelButtonTitle:nil
                                               otherButtonTitles:nil, nil];
         toast.backgroundColor=[UIColor redColor];
         [toast show];
         int duration = 2; // duration in seconds
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, duration * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [toast dismissWithClickedButtonIndex:0 animated:YES];            });
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, duration * NSEC_PER_SEC),
+                       dispatch_get_main_queue(),
+                       ^{
+                           [toast dismissWithClickedButtonIndex:0 animated:YES];
+                       });
     }
 }
 
-- (void)onLogin
+- (void)loginButtonDidLogOut:(FBSDKLoginButton *)loginButton
+{
+}
+
+- (void)loginMyFacebook
 {
     UIViewController *feedViewController = [[MFFeedViewController alloc] init];
     UINavigationController *navigationViewController = [[UINavigationController alloc] initWithRootViewController:feedViewController];
@@ -71,6 +72,7 @@
     
     [self presentViewController:navigationViewController animated:YES completion:nil];
 }
+
 - (void)dismiss
 {
     [self dismissViewControllerAnimated:NO completion:nil];
