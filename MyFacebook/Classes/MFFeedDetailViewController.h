@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "FeedItem.h"
+#import "FeedData.h"
 
 @interface MFFeedDetailViewController : UIViewController
 
-@property (strong, nonatomic) FeedItem* feedItem;
+@property (strong, nonatomic) FeedData *feedData;
 
--(id)initWith:(FeedItem *)feedContents;
+-(id)initWith:(FeedData *)passedFeedData;
 
 @end

@@ -13,5 +13,4 @@
 
 @interface MFLoginViewController : UIViewController <FBSDKLoginButtonDelegate>
 
-
 @end

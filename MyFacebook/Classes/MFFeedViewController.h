@@ -12,7 +12,7 @@
 
 @interface MFFeedViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 
-@property (strong,nonatomic) UITableView *table;
-@property (strong,nonatomic) NSMutableArray *cellData;
+@property (strong,nonatomic) UITableView *feedTableView;
+@property (strong,nonatomic) NSMutableArray *feedDataArray;
 
 @end

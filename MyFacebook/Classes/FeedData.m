@@ -6,9 +6,9 @@
 //  Copyright © 2016년 NEXON Korea Corporation. All rights reserved.
 //
 
-#import "FeedItem.h"
+#import "FeedData.h"
 
-@implementation FeedItem 
+@implementation FeedData 
 
 @end
 

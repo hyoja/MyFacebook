@@ -15,7 +15,7 @@
 		B89CEB011DC0A334000E9B0A /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B89CEAFD1DC0A334000E9B0A /* FBSDKCoreKit.framework */; };
 		B89CEB021DC0A334000E9B0A /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B89CEAFE1DC0A334000E9B0A /* FBSDKLoginKit.framework */; };
 		B89CEB031DC0A334000E9B0A /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B89CEAFF1DC0A334000E9B0A /* FBSDKShareKit.framework */; };
-		B89CEB061DC0AF55000E9B0A /* FeedItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B89CEB051DC0AF55000E9B0A /* FeedItem.m */; };
+		B89CEB061DC0AF55000E9B0A /* FeedData.m in Sources */ = {isa = PBXBuildFile; fileRef = B89CEB051DC0AF55000E9B0A /* FeedData.m */; };
 		B8DAC7611DAF1D3B008C2FBA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B8DAC7601DAF1D3B008C2FBA /* main.m */; };
 		B8DAC7641DAF1D3B008C2FBA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B8DAC7631DAF1D3B008C2FBA /* AppDelegate.m */; };
 		B8DAC76A1DAF1D3B008C2FBA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B8DAC7681DAF1D3B008C2FBA /* Main.storyboard */; };
@@ -36,8 +36,8 @@
 		B89CEAFD1DC0A334000E9B0A /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = ../../../Users/hyoja/Documents/FacebookSDK/FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		B89CEAFE1DC0A334000E9B0A /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = ../../../Users/hyoja/Documents/FacebookSDK/FBSDKLoginKit.framework; sourceTree = "<group>"; };
 		B89CEAFF1DC0A334000E9B0A /* FBSDKShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKShareKit.framework; path = ../../../Users/hyoja/Documents/FacebookSDK/FBSDKShareKit.framework; sourceTree = "<group>"; };
-		B89CEB041DC0AF55000E9B0A /* FeedItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedItem.h; sourceTree = "<group>"; };
-		B89CEB051DC0AF55000E9B0A /* FeedItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedItem.m; sourceTree = "<group>"; };
+		B89CEB041DC0AF55000E9B0A /* FeedData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedData.h; sourceTree = "<group>"; };
+		B89CEB051DC0AF55000E9B0A /* FeedData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedData.m; sourceTree = "<group>"; };
 		B8DAC75C1DAF1D3B008C2FBA /* MyFacebook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyFacebook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8DAC7601DAF1D3B008C2FBA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B8DAC7621DAF1D3B008C2FBA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -74,8 +74,6 @@
 				B85CC0B51DBF2C2600C2A7B6 /* MFFeedViewController.m */,
 				B85CC0BA1DBF52E400C2A7B6 /* MFFeedDetailViewController.h */,
 				B85CC0BB1DBF52E400C2A7B6 /* MFFeedDetailViewController.m */,
-				B89CEAE21DC0418B000E9B0A /* CustomCell.h */,
-				B89CEAE31DC0418B000E9B0A /* CustomCell.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -83,8 +81,8 @@
 		B807057D1DBF01D900D88D91 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				B89CEB041DC0AF55000E9B0A /* FeedItem.h */,
-				B89CEB051DC0AF55000E9B0A /* FeedItem.m */,
+				B89CEB041DC0AF55000E9B0A /* FeedData.h */,
+				B89CEB051DC0AF55000E9B0A /* FeedData.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -92,6 +90,8 @@
 		B807057E1DBF01E000D88D91 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				B89CEAE21DC0418B000E9B0A /* CustomCell.h */,
+				B89CEAE31DC0418B000E9B0A /* CustomCell.m */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -240,7 +240,7 @@
 				B8DAC7641DAF1D3B008C2FBA /* AppDelegate.m in Sources */,
 				B89CEAE41DC0418B000E9B0A /* CustomCell.m in Sources */,
 				B85CC0BC1DBF52E400C2A7B6 /* MFFeedDetailViewController.m in Sources */,
-				B89CEB061DC0AF55000E9B0A /* FeedItem.m in Sources */,
+				B89CEB061DC0AF55000E9B0A /* FeedData.m in Sources */,
 				B85CC0B61DBF2C2600C2A7B6 /* MFFeedViewController.m in Sources */,
 				B8DAC7611DAF1D3B008C2FBA /* main.m in Sources */,
 			);

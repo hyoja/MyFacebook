@@ -10,110 +10,176 @@
 #import "MFFeedDetailViewController.h"
 
 #import "CustomCell.h"
-#import "FeedItem.h"
+#import "FeedData.h"
 
 @implementation MFFeedViewController
+{
+@private
+    bool isRequestDone;
+    NSString *nextFeedPagePath;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
+    isRequestDone = YES;
+    nextFeedPagePath = @"";
+    
     self.title = @"Feeds";
-    [self cofigureTableview];
+    [self configureTableView];
     
-    self.cellData = [[NSMutableArray alloc]init];
+    self.feedDataArray = [[NSMutableArray alloc]init];
     
-    if ([FBSDKAccessToken currentAccessToken]){
+    NSString* const FEED_REQUEST_GRAPH_PATH = @"me/feed?fields=picture,created_time,message,id";
+    [self requestGraphAPI:FEED_REQUEST_GRAPH_PATH];
+}
+
+- (void)configureTableView
+{
+    self.feedTableView = [[UITableView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame] style:UITableViewStylePlain];
+    self.feedTableView.delegate = self;
+    self.feedTableView.dataSource = self;
+    [self.view addSubview:self.feedTableView];
+}
+
+- (void)requestGraphAPI:(NSString*)graphPath
+{
+    if ([FBSDKAccessToken currentAccessToken] && isRequestDone == YES){
+        isRequestDone = NO;
         
-        [[[FBSDKGraphRequest alloc] initWithGraphPath:@"me/feed?fields=picture,created_time,message,id" parameters:nil]
+        [[[FBSDKGraphRequest alloc] initWithGraphPath:graphPath parameters:nil]
          
          startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error){
+             
+             isRequestDone = YES;
              if (!error){
-                 for (NSDictionary *graphAPIData in [result objectForKey:@"data"]){
-                     
-                     FeedItem *feed = [[FeedItem alloc]init];
-                     
-                     NSString *createdTime = [graphAPIData objectForKey:@"created_time"];
-                     NSString *picture = [graphAPIData objectForKey:@"picture"];
-                     NSString *message = [graphAPIData objectForKey:@"message"];
-                     
-                     [feed setWritedTime:createdTime];
-                     [feed setTitle:message];
-                     
-                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                         
-                         feed.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:picture]]];
-                         
-                         dispatch_async(dispatch_get_main_queue(), ^ {
-                             feed.targetImageView.image = feed.image;
-                             [feed.targetImageView setNeedsDisplay];
-                         });
-                     });
-
-                     [self.cellData addObject:feed];
-                 }
-                 
-                 [self.table reloadData];
+                 [self findNextFeedPagePath:result];
+                 [self fillFeedTableView:result];
              }
+             
          }];
     }
 }
 
-- (void)cofigureTableview
+-(void) findNextFeedPagePath:(id)result
 {
-    self.table = [[UITableView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame] style:UITableViewStylePlain];
-    self.table.delegate = self;
-    self.table.dataSource = self;
-    [self.view addSubview:self.table];
+    nextFeedPagePath = [[result objectForKey:@"paging"] objectForKey:@"next"];
+    
+    if(nextFeedPagePath != nil){
+        int count = 0;
+        int index = -1;
+        for (unsigned int i = 0; i < [nextFeedPagePath length]; ++i)
+        {
+            if ([nextFeedPagePath characterAtIndex:i] == '/')
+            {
+                count++;
+                if (count == 4)
+                {
+                    index = i;
+                    break;
+                }
+            }
+        }
+        if(index > -1) {
+            nextFeedPagePath = [nextFeedPagePath substringFromIndex:index + 1];
+        } else {
+            nextFeedPagePath = nil;
+        }
+    }
+}
+
+- (void) fillFeedTableView:(id)result
+{
+    for (NSDictionary *graphAPIData in [result objectForKey:@"data"]){
+        
+        FeedData *feedData = [[FeedData alloc]init];
+        
+        NSString *writedTime = [graphAPIData objectForKey:@"created_time"];
+        NSString *picture = [graphAPIData objectForKey:@"picture"];
+        NSString *message = [graphAPIData objectForKey:@"message"];
+        
+        [feedData setWritedTime:writedTime];
+        [feedData setTitle:message];
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            feedData.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:picture]]];
+            
+            dispatch_async(dispatch_get_main_queue(), ^ {
+                feedData.feedImageView.image = feedData.image;
+                [feedData.feedImageView setNeedsDisplay];
+            });
+        });
+        
+        [self.feedDataArray addObject:feedData];
+    }
+    
+    [self.feedTableView reloadData];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UIViewController *detailViewController = [[MFFeedDetailViewController alloc] initWith:[self.feedDataArray objectAtIndex:indexPath.row]];
+    [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    const int TABLE_CELL_HEIGHT = 60;
+    return TABLE_CELL_HEIGHT;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.cellData count];
+    return [self.feedDataArray count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *cellIdentifier = @"cellIdentifier";
-
-    CustomCell *cell = [self.table dequeueReusableCellWithIdentifier:cellIdentifier];
-
-    if(cell == nil)
+    
+    CustomCell *customCell = [self.feedTableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    
+    if(customCell == nil)
     {
-        cell = [[[CustomCell alloc] init]
-                                        initWithStyle:UITableViewCellStyleDefault
-                                       reuseIdentifier:cellIdentifier];
+        customCell = [[[CustomCell alloc] init]
+                      initWithStyle:UITableViewCellStyleDefault
+                      reuseIdentifier:cellIdentifier];
     }
     
-    FeedItem *feedItemCell = (FeedItem *)[self.cellData objectAtIndex:indexPath.row];
-    cell.titleLabel.text = [feedItemCell title];
-    cell.writedTimeLabel.text = [feedItemCell writedTime];
+    FeedData *loadedFeedData = (FeedData *)[self.feedDataArray objectAtIndex:indexPath.row];
+    customCell.titleLabel.text = loadedFeedData.title;
+    customCell.writedTimeLabel.text = loadedFeedData.writedTime;
     
-    if(feedItemCell.image != nil)
+    if(loadedFeedData.image != nil) // it need for async task.
     {
-        cell.feedImageView.image = [feedItemCell image];
+        customCell.feedImageView.image = loadedFeedData.image;
     }
     else
     {
-        feedItemCell.targetImageView = cell.feedImageView;
+        loadedFeedData.feedImageView = customCell.feedImageView;
     }
-    return cell;
+    return customCell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    UIViewController *detailViewController = [[MFFeedDetailViewController alloc] initWith:[self.cellData objectAtIndex:indexPath.row]];
-    [self.navigationController pushViewController:detailViewController animated:YES];
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    const int TABLE_CELL_HEIGHT = 60;
-    return TABLE_CELL_HEIGHT;
+    CGFloat height = scrollView.frame.size.height;
+    CGFloat contentYoffset = scrollView.contentOffset.y;
+    CGFloat distanceFromBottom = scrollView.contentSize.height - contentYoffset;
+    
+    if(distanceFromBottom < height)
+    {
+        if(isRequestDone == YES)
+        {
+            [self requestGraphAPI:nextFeedPagePath];
+        }
+    }
 }
 
 @end

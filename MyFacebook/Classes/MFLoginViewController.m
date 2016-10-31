@@ -20,42 +20,35 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     if ([FBSDKAccessToken currentAccessToken] == nil) {
-        FBSDKLoginButton *loginButton = [[FBSDKLoginButton alloc] init];
-        loginButton.delegate = self;
-        loginButton.center = self.view.center;
-        [self.view addSubview:loginButton];
+        [self makeFacebookButton];
     } else {
         [self loginMyFacebook];
     }
 }
 
-
-#pragma mark - FBSDKLoginButtonDelegate
-
-- (void)loginButton:(FBSDKLoginButton *)loginButton didCompleteWithResult:(FBSDKLoginManagerLoginResult *)result error:(NSError *)error
+- (void) makeFacebookButton
 {
-    if(result.isCancelled != YES &&
-       [FBSDKAccessToken currentAccessToken] != nil){
-        [self loginMyFacebook];
-    } else {
-        UIAlertView *toast = [[UIAlertView alloc] initWithTitle:nil
-                                                        message:@"Login was Cancled."
-                                                       delegate:nil
-                                              cancelButtonTitle:nil
-                                              otherButtonTitles:nil, nil];
-        toast.backgroundColor=[UIColor redColor];
-        [toast show];
-        int duration = 2; // duration in seconds
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, duration * NSEC_PER_SEC),
-                       dispatch_get_main_queue(),
-                       ^{
-                           [toast dismissWithClickedButtonIndex:0 animated:YES];
-                       });
-    }
+    FBSDKLoginButton *loginButton = [[FBSDKLoginButton alloc] init];
+    loginButton.delegate = self;
+    loginButton.center = self.view.center;
+    [self.view addSubview:loginButton];
 }
 
-- (void)loginButtonDidLogOut:(FBSDKLoginButton *)loginButton
+- (void) makeToastView:(NSString *)toastMessage
 {
+    UIAlertView *toast = [[UIAlertView alloc] initWithTitle:nil
+                                                    message:toastMessage
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:nil, nil];
+    toast.backgroundColor=[UIColor redColor];
+    [toast show];
+    int duration = 2; // duration in seconds
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, duration * NSEC_PER_SEC),
+                   dispatch_get_main_queue(),
+                   ^{
+                       [toast dismissWithClickedButtonIndex:0 animated:YES];
+                   });
 }
 
 - (void)loginMyFacebook
@@ -80,5 +73,22 @@
     [loginManager logOut];
     [FBSDKAccessToken setCurrentAccessToken:nil];
 }
+
+#pragma mark - FBSDKLoginButtonDelegate
+
+- (void)loginButton:(FBSDKLoginButton *)loginButton didCompleteWithResult:(FBSDKLoginManagerLoginResult *)result error:(NSError *)error
+{
+    if(result.isCancelled != YES &&
+       [FBSDKAccessToken currentAccessToken] != nil){
+        [self loginMyFacebook];
+    } else {
+        [self makeToastView:@"Login was Cancled."];
+    }
+}
+
+- (void)loginButtonDidLogOut:(FBSDKLoginButton *)loginButton
+{
+}
+
 
 @end
